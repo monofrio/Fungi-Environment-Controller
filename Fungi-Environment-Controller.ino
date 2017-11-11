@@ -5,6 +5,10 @@
       * Download: http://www.ardumotive.com/uploads/1/2/7/2/12726513/dht22_tutorial.zip
     * MQ-135 Gas Sensor - code from: http://microcontrollerslab.com/interfacing-mq-135-gas-sensor-arduino/#Code_for_interfacing_ofMQ-135_gas_sensor_with_Arduino
     * Arduino Uno
+    * 
+    * NOTES:
+    * http://kylegabriel.com/projects/2015/02/automated-mushroom-cultivation.html
+    * 
     
     ## Sample data from inside the tank
     * Air Quality: 19 %, Humidity: 28.70 %, Temp: 77.72 Fahrenheit, 11pm 10-4-17 
@@ -20,8 +24,8 @@
 int sensorValue;
 int digitalValue;
 
-int redLed = 13;
-int greenLed = 12;
+int redLed = 13; // Pin 13 on Arduino 
+int greenLed = 12; // Pin 12 on Arduino 
 
 //Libraries
 #include <dht.h> 
@@ -40,6 +44,17 @@ void setup()
   pinMode(greenLed, OUTPUT);
   //pinMode(RELAY1, OUTPUT); 
   Serial.begin(9600);      // sets the serial port to 9600
+
+
+// Warm up time for the air quality sensor 
+    digitalWrite(greenLed, HIGH);       // Turns Green Light ON
+        delay(100);
+    digitalWrite(greenLed, LOW);       // Turns Green Light OFF
+        delay(100);
+    digitalWrite(greenLed, HIGH);       // Turns Green Light ON
+        delay(100);
+    digitalWrite(greenLed, LOW);       // Turns Green Light OFF
+        delay(60000); // Delay 1 minute 
 }
 
 void loop()
@@ -78,7 +93,7 @@ void loop()
   //Serial.println(" Celsius");
   Serial.println(" Fahrenheit");
 
-  delay(10000); // wait 100ms for next reading
+  delay(10000); // wait 10s for next reading
 }
 
 
