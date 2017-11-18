@@ -13,13 +13,6 @@ DHT dht(DHTPIN, DHTTYPE);
 // WiFi credentials.
 #include "../../Fungi-Environment-Controller/WiFiCredentials.h"
 
-
-// Losant credentials.
-const char* LOSANT_DEVICE_ID = "5a0d1c392086850007bf7ea4";
-const char* LOSANT_ACCESS_KEY = "fbb75b40-39a8-4467-a495-f114cfb95083";
-const char* LOSANT_ACCESS_SECRET = "ba814db563065b8b4698ab90f7f1e941765b75972ff129113736255f63894e95";
-
-
 WiFiClientSecure wifiClient;
 
 LosantDevice device(LOSANT_DEVICE_ID);
