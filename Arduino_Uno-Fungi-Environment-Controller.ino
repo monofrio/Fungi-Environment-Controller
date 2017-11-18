@@ -46,15 +46,16 @@ void setup()
   Serial.begin(9600);      // sets the serial port to 9600
 
 
-// Warm up time for the air quality sensor 
-    digitalWrite(greenLed, HIGH);       // Turns Green Light ON
+// Warm up time for the air quality sensor - Not on for trouble shooting
+/*    digitalWrite(greenLed, HIGH);       // Turns Green Light ON
         delay(100);
     digitalWrite(greenLed, LOW);       // Turns Green Light OFF
         delay(100);
     digitalWrite(greenLed, HIGH);       // Turns Green Light ON
         delay(100);
     digitalWrite(greenLed, LOW);       // Turns Green Light OFF
-        delay(60000); // Delay 1 minute 
+    delay(60000); // Delay 1 minute 
+*/
 }
 
 void loop()
