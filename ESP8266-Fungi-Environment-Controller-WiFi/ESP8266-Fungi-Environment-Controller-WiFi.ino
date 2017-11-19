@@ -12,6 +12,7 @@ int redLed = D6; // Pin 13 on Arduino
 int greenLed = D7; // Pin 12 on Arduino
 int timeSinceLastRead = 0;
 
+
 DHT dht(DHTPIN, DHTTYPE);
 
 // WiFi credentials.
@@ -106,7 +107,6 @@ void connect() {
       }
     } else {
         Serial.println("Failed to connect to Losant API.");
-
    }
 
   http.end();
@@ -127,6 +127,23 @@ void connect() {
   Serial.println("This device is now ready for use!");
 }
 
+void humidityChecker() {
+    float _humidity = dht.readHumidity();
+    // Humidity checker
+    if (_humidity < 80) {
+      Serial.println("Humidity is bad");
+      digitalWrite(redLed, HIGH);
+      digitalWrite(greenLed, LOW);
+      //digitalWrite(RELAY1,LOW);           // Turns ON Relays 1
+    }
+    else {
+      Serial.println("Humidity is good");
+      digitalWrite(redLed, LOW);          // Turns Red light OFF
+      digitalWrite(greenLed, HIGH);       // Turns Green Light ON
+      //digitalWrite(RELAY1,HIGH);          // Turns Relay Off
+    }
+}
+
 void setup() {
   pinMode(greenLed, OUTPUT);     // Trun on humidifier on green light
   pinMode(redLed, OUTPUT);     // Turn off humidifier on red light
@@ -142,6 +159,7 @@ void setup() {
   Serial.println("Running DHT!");
   Serial.println("-------------------------------------");
 
+  humidityChecker();
   connect();
 }
 
@@ -158,27 +176,6 @@ void report(double humidity, double tempC, double tempF, double heatIndexC, doub
 }
 
 void loop() {
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  float t = dht.readTemperature();
-  // Read temperature as Fahrenheit (isFahrenheit = true)
-  float f = dht.readTemperature(true);
-
-  if (h < 80) {
-    Serial.println("Humidity is bad");
-    digitalWrite(redLed, HIGH);
-    digitalWrite(greenLed, LOW);
-    //digitalWrite(RELAY1,LOW);           // Turns ON Relays 1
-  }
-  else {
-    Serial.println("Humidity is good");
-    digitalWrite(redLed, LOW);          // Turns Red light OFF
-    digitalWrite(greenLed, HIGH);       // Turns Green Light ON
-    //digitalWrite(RELAY1,HIGH);          // Turns Relay Off
-  }
-
-
    bool toReconnect = false;
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -201,6 +198,12 @@ void loop() {
   // Report every 2 seconds.
   if(timeSinceLastRead > 2000) {
     // Reading temperature or humidity takes about 250 milliseconds!
+    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+    float h = dht.readHumidity();
+    // Read temperature as Celsius (the default)
+    float t = dht.readTemperature();
+    // Read temperature as Fahrenheit (isFahrenheit = true)
+    float f = dht.readTemperature(true);
 
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t) || isnan(f)) {
@@ -228,7 +231,7 @@ void loop() {
     //Serial.print(hif);
     //Serial.println(" *F");
     report(h, t, f, hic, hif);
-
+    humidityChecker();
     timeSinceLastRead = 0;
   }
   delay(100);
