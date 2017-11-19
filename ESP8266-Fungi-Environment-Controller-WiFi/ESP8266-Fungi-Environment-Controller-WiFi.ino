@@ -9,7 +9,7 @@
 #define DHTTYPE DHT22   // There are multiple kinds of DHT sensors
 
 int humidiferController = D7;
-int greenLed = D6; 
+int greenLed = D6;
 int redLed = D5;
 int timeSinceLastRead = 0;
 
@@ -40,6 +40,7 @@ void connect() {
   unsigned long wifiConnectStart = millis();
 
   while (WiFi.status() != WL_CONNECTED) {
+    humidityChecker();
     // Check to see if
     if (WiFi.status() == WL_CONNECT_FAILED) {
       Serial.println("Failed to connect to WIFI. Please verify credentials: ");
@@ -173,6 +174,7 @@ void report(double humidity, double tempC, double tempF, double heatIndexC, doub
 }
 
 void loop() {
+  humidityChecker();
    bool toReconnect = false;
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -180,7 +182,8 @@ void loop() {
     digitalWrite(greenLed, LOW);
     digitalWrite(redLed, HIGH);
     toReconnect = true;
-  }else{
+  }
+  else{
     digitalWrite(greenLed, HIGH);
     digitalWrite(redLed, LOW);
   }
@@ -233,7 +236,6 @@ void loop() {
     //Serial.print(hif);
     //Serial.println(" *F");
     report(h, t, f, hic, hif);
-    humidityChecker();
     timeSinceLastRead = 0;
   }
   delay(100);
