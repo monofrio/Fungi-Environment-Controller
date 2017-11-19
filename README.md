@@ -18,6 +18,7 @@ Now working with HiLetgo ESP8266 as a cheap alternative to connect to WiFi
   * https://www.amazon.com/gp/product/B06XG8VPFY/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1
   * Voltage: DC 5v
   * Power: 2w
+* Relay module
 
 ## Sample data from inside the tank
 ```
@@ -31,5 +32,5 @@ Humidity: 36.20 %	Temperature: 24.00 *C 75.20 *F	Heat index: 23.40 *C 74.12 *F
 - [X] Set up ESP8266 with DHT-22 sensor
 - [ ] Set up ESP8266 With MQ-135 sensor
 - [ ] Set up ESP8266 to database
-- [ ] Set up humidifier
+- [X] Set up humidifier
 - [ ] Set up heater for Tank

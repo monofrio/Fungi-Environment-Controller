@@ -8,8 +8,9 @@
 #define DHTPIN 4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // There are multiple kinds of DHT sensors
 
-int redLed = D6; // Pin 13 on Arduino
-int greenLed = D7; // Pin 12 on Arduino
+int humidiferController = D7;
+int greenLed = D6; 
+int redLed = D5;
 int timeSinceLastRead = 0;
 
 
@@ -132,15 +133,11 @@ void humidityChecker() {
     // Humidity checker
     if (_humidity < 80) {
       Serial.println("Humidity is bad");
-      digitalWrite(redLed, HIGH);
-      digitalWrite(greenLed, LOW);
-      //digitalWrite(RELAY1,LOW);           // Turns ON Relays 1
+      digitalWrite(humidiferController, HIGH);
     }
     else {
       Serial.println("Humidity is good");
-      digitalWrite(redLed, LOW);          // Turns Red light OFF
-      digitalWrite(greenLed, HIGH);       // Turns Green Light ON
-      //digitalWrite(RELAY1,HIGH);          // Turns Relay Off
+      digitalWrite(humidiferController, LOW);          // Turns Red light OFF
     }
 }
 
@@ -180,7 +177,12 @@ void loop() {
 
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Disconnected from WiFi");
+    digitalWrite(greenLed, LOW);
+    digitalWrite(redLed, HIGH);
     toReconnect = true;
+  }else{
+    digitalWrite(greenLed, HIGH);
+    digitalWrite(redLed, LOW);
   }
 
   if (!device.connected()) {
