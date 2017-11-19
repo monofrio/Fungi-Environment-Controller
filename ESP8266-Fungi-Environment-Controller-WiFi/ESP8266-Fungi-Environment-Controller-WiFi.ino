@@ -13,28 +13,37 @@ int greenLed = D6;
 int redLed = D5;
 int timeSinceLastRead = 0;
 
+int sensorValue;
+int digitalValue;
+
 DHT dht(DHTPIN, DHTTYPE);
 
 // WiFi credentials.
 #include "../../Fungi-Environment-Controller/WiFiCredentials.h"
 WiFiClientSecure wifiClient;
 
-// LosantDevice device(LOSANT_DEVICE_ID);
+void airSensor(){
+  sensorValue = analogRead(0);       // read analog input pin 0
+  digitalValue = digitalRead(0);
+  Serial.print("Air Quality: ");
+  Serial.print(sensorValue, DEC);  // prints the value read
+  //Serial.println(digitalValue, DEC); // not using
 
+}
 void humidityChecker() {
     float _humidity = dht.readHumidity();
     // Humidity checker
     if (_humidity < 80) {
-      Serial.println("Humidity is bad - ");
+      Serial.print(" Humidity is bad - ");
       Serial.print(_humidity);
       Serial.print(" %\t");
-      digitalWrite(humidiferController, HIGH);
+      digitalWrite(humidiferController, LOW);
     }
     else {
       Serial.println("Humidity is good - ");
       Serial.print(_humidity);
       Serial.print(" %\t");
-      digitalWrite(humidiferController, LOW);          // Turns Red light OFF
+      digitalWrite(humidiferController, HIGH);          // Turns Red light OFF
     }
 }
 void sensorsChecker(){
@@ -85,12 +94,7 @@ void connect() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
-  //http request --
-
-//  while(!device.connected()) {
-//    delay(500);
-//    Serial.print(".");
-//  }
+  // http request
 
   Serial.println("Connected!");
   Serial.println();
@@ -141,7 +145,7 @@ void loop() {
   if (toReconnect) {
     connect();
   }
-  
+
   // Report every 2 seconds.
   if(timeSinceLastRead > 2000) {
     sensorsChecker();
