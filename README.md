@@ -34,3 +34,5 @@ Humidity: 36.20 %	Temperature: 24.00 *C 75.20 *F	Heat index: 23.40 *C 74.12 *F
 - [ ] Set up ESP8266 to database
 - [X] Set up humidifier
 - [ ] Set up heater for Tank
+## TODO
+- [ ] Build Shield for all the components 

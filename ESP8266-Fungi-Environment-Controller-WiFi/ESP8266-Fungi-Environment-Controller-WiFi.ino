@@ -3,7 +3,7 @@
 #include "DHT.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
-#include <Losant.h>
+// #include <Losant.h>
 
 #define DHTPIN 4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // There are multiple kinds of DHT sensors
@@ -13,15 +13,33 @@ int greenLed = D6;
 int redLed = D5;
 int timeSinceLastRead = 0;
 
-
 DHT dht(DHTPIN, DHTTYPE);
 
 // WiFi credentials.
 #include "../../Fungi-Environment-Controller/WiFiCredentials.h"
-
 WiFiClientSecure wifiClient;
 
-LosantDevice device(LOSANT_DEVICE_ID);
+// LosantDevice device(LOSANT_DEVICE_ID);
+
+void humidityChecker() {
+    float _humidity = dht.readHumidity();
+    // Humidity checker
+    if (_humidity < 80) {
+      Serial.println("Humidity is bad - ");
+      Serial.print(_humidity);
+      Serial.print(" %\t");
+      digitalWrite(humidiferController, HIGH);
+    }
+    else {
+      Serial.println("Humidity is good - ");
+      Serial.print(_humidity);
+      Serial.print(" %\t");
+      digitalWrite(humidiferController, LOW);          // Turns Red light OFF
+    }
+}
+void sensorsChecker(){
+  humidityChecker();
+}
 
 void connect() {
 
@@ -31,7 +49,6 @@ void connect() {
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
 
-  // WiFi fix: https://github.com/esp8266/Arduino/issues/2186
   WiFi.persistent(false);
   WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
@@ -40,7 +57,7 @@ void connect() {
   unsigned long wifiConnectStart = millis();
 
   while (WiFi.status() != WL_CONNECTED) {
-    humidityChecker();
+    sensorsChecker();
     // Check to see if
     if (WiFi.status() == WL_CONNECT_FAILED) {
       Serial.println("Failed to connect to WIFI. Please verify credentials: ");
@@ -68,78 +85,16 @@ void connect() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
-  Serial.print("Authenticating Device...");
-  HTTPClient http;
-  http.begin("http://api.losant.com/auth/device");
-  http.addHeader("Content-Type", "application/json");
-  http.addHeader("Accept", "application/json");
+  //http request --
 
-  /* Create JSON payload to sent to Losant
-   *
-   *   {
-   *     "deviceId": "575ecf887ae143cd83dc4aa2",
-   *     "key": "this_would_be_the_key",
-   *     "secret": "this_would_be_the_secret"
-   *   }
-   *
-   */
-
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.createObject();
-  root["deviceId"] = LOSANT_DEVICE_ID;
-  root["key"] = LOSANT_ACCESS_KEY;
-  root["secret"] = LOSANT_ACCESS_SECRET;
-  String buffer;
-  root.printTo(buffer);
-
-  int httpCode = http.POST(buffer);
-
-  if(httpCode > 0) {
-      if(httpCode == HTTP_CODE_OK) {
-          Serial.println("This device is authorized!");
-      } else {
-        Serial.println("Failed to authorize device to Losant.");
-        if(httpCode == 400) {
-          Serial.println("Validation error: The device ID, access key, or access secret is not in the proper format.");
-        } else if(httpCode == 401) {
-          Serial.println("Invalid credentials to Losant: Please double-check the device ID, access key, and access secret.");
-        } else {
-           Serial.println("Unknown response from API");
-        }
-      }
-    } else {
-        Serial.println("Failed to connect to Losant API.");
-   }
-
-  http.end();
-
-  // Connect to Losant.
-  Serial.println();
-  Serial.print("Connecting to Losant...");
-
-  device.connectSecure(wifiClient, LOSANT_ACCESS_KEY, LOSANT_ACCESS_SECRET);
-
-  while(!device.connected()) {
-    delay(500);
-    Serial.print(".");
-  }
+//  while(!device.connected()) {
+//    delay(500);
+//    Serial.print(".");
+//  }
 
   Serial.println("Connected!");
   Serial.println();
   Serial.println("This device is now ready for use!");
-}
-
-void humidityChecker() {
-    float _humidity = dht.readHumidity();
-    // Humidity checker
-    if (_humidity < 80) {
-      Serial.println("Humidity is bad");
-      digitalWrite(humidiferController, HIGH);
-    }
-    else {
-      Serial.println("Humidity is good");
-      digitalWrite(humidiferController, LOW);          // Turns Red light OFF
-    }
 }
 
 void setup() {
@@ -161,20 +116,8 @@ void setup() {
   connect();
 }
 
-void report(double humidity, double tempC, double tempF, double heatIndexC, double heatIndexF) {
-  StaticJsonBuffer<500> jsonBuffer;
-  JsonObject& root = jsonBuffer.createObject();
-  root["humidity"] = humidity;
-  root["tempC"] = tempC;
-  root["tempF"] = tempF;
-  root["heatIndexC"] = heatIndexC;
-  root["heatIndexF"] = heatIndexF;
-  device.sendState(root);
-  Serial.println("Reported!");
-}
-
 void loop() {
-  humidityChecker();
+
    bool toReconnect = false;
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -184,24 +127,25 @@ void loop() {
     toReconnect = true;
   }
   else{
+    // Set LED lights to indicate when wifi is connected
     digitalWrite(greenLed, HIGH);
     digitalWrite(redLed, LOW);
   }
 
-  if (!device.connected()) {
-    Serial.println("Disconnected from MQTT");
-    Serial.println(device.mqttClient.state());
-    toReconnect = true;
-  }
+//  if (!device.connected()) {
+//    Serial.println("Disconnected from MQTT");
+//    Serial.println(device.mqttClient.state());
+//    toReconnect = true;
+//  }
 
   if (toReconnect) {
     connect();
   }
-
-  device.loop();
-
+  
   // Report every 2 seconds.
   if(timeSinceLastRead > 2000) {
+    sensorsChecker();
+
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
     float h = dht.readHumidity();
@@ -222,20 +166,17 @@ void loop() {
     // Compute heat index in Celsius (isFahreheit = false)
     float hic = dht.computeHeatIndex(t, h, false);
 
-    Serial.print("Humidity: ");
-    Serial.print(h);
-    //Serial.print(" %\t");
     Serial.print("Temperature: ");
     //Serial.print(t);
     //Serial.print(" *C ");
     Serial.print(f);
-    Serial.print(" *F\t");
-    //Serial.print("Heat index: ");
+    Serial.print(" *F%\t");
+    Serial.print("Heat index: ");
     //Serial.print(hic);
     //Serial.print(" *C ");
-    //Serial.print(hif);
-    //Serial.println(" *F");
-    report(h, t, f, hic, hif);
+    Serial.print(hif);
+    Serial.println(" *F");
+//    report(h, t, f, hic, hif);
     timeSinceLastRead = 0;
   }
   delay(100);
