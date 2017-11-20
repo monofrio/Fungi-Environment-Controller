@@ -5,17 +5,17 @@
       * Download: http://www.ardumotive.com/uploads/1/2/7/2/12726513/dht22_tutorial.zip
     * MQ-135 Gas Sensor - code from: http://microcontrollerslab.com/interfacing-mq-135-gas-sensor-arduino/#Code_for_interfacing_ofMQ-135_gas_sensor_with_Arduino
     * Arduino Uno
-    * 
+    *
     * NOTES:
     * http://kylegabriel.com/projects/2015/02/automated-mushroom-cultivation.html
-    * 
-    
+    *
+
     ## Sample data from inside the tank
-    * Air Quality: 19 %, Humidity: 28.70 %, Temp: 77.72 Fahrenheit, 11pm 10-4-17 
-    
+    * Air Quality: 19 %, Humidity: 28.70 %, Temp: 77.72 Fahrenheit, 11pm 10-4-17
+
     ## Projects TODO.
-    * Make a 12 power supply 
-      * Transformer down to 5v to power Arduino 
+    * Make a 12 power supply
+      * Transformer down to 5v to power Arduino
     * Set up Relay with Pin 7 To improve Air Quality
     * Set up heater for Tank
     * Set up humidifier
@@ -24,15 +24,15 @@
 int sensorValue;
 int digitalValue;
 
-int redLed = 13; // Pin 13 on Arduino 
-int greenLed = 12; // Pin 12 on Arduino 
+int redLed = 13; // Pin 13 on Arduino
+int greenLed = 12; // Pin 12 on Arduino
 
 //Libraries
-#include <dht.h> 
+#include <dht.h>
 dht DHT;
 //Constants
 #define DHT22_PIN 2     // DHT 22  (AM2302) - what pin we're connected to
-#define RELAY1  7       
+#define RELAY1  7
 
 //Variables
 float hum;  //Stores humidity value
@@ -42,7 +42,7 @@ void setup()
 {
   pinMode(redLed, OUTPUT);
   pinMode(greenLed, OUTPUT);
-  //pinMode(RELAY1, OUTPUT); 
+  //pinMode(RELAY1, OUTPUT);
   Serial.begin(9600);      // sets the serial port to 9600
 
 
@@ -54,12 +54,17 @@ void setup()
     digitalWrite(greenLed, HIGH);       // Turns Green Light ON
         delay(100);
     digitalWrite(greenLed, LOW);       // Turns Green Light OFF
-    delay(60000); // Delay 1 minute 
+    delay(60000); // Delay 1 minute
 */
 }
 
 void loop()
 {
+  float rzero = gasSensor.getRZero();
+  Serial.println(rzero);
+  // #define RZERO 76.63
+  // float ppm = gasSensor.getPPM();
+
   sensorValue = analogRead(0);       // read analog input pin 0
   digitalValue = digitalRead(0);
   Serial.print("Air Quality: ");
@@ -83,7 +88,7 @@ void loop()
   }
 
   int chk = DHT.read22(DHT22_PIN);
-  //Read data and store it to variables hum and temp  
+  //Read data and store it to variables hum and temp
   hum = DHT.humidity;
   temp = DHT.temperature;
   //Print temp and humidity values to serial monitor
@@ -96,6 +101,3 @@ void loop()
 
   delay(10000); // wait 10s for next reading
 }
-
-
-

@@ -30,7 +30,7 @@ Humidity: 36.20 %	Temperature: 24.00 *C 75.20 *F	Heat index: 23.40 *C 74.12 *F
 
 ## Task List.
 - [X] Set up ESP8266 with DHT-22 sensor
-- [ ] Set up ESP8266 With MQ-135 sensor
+- [X] Set up ESP8266 With MQ-135 sensor
 - [ ] Set up ESP8266 to database
 - [X] Set up humidifier
 - [ ] Set up heater for Tank

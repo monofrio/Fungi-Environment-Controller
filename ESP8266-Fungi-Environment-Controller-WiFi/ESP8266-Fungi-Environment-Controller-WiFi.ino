@@ -3,51 +3,68 @@
 #include "DHT.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include "MQ135.h"
 // #include <Losant.h>
 
 #define DHTPIN 4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // There are multiple kinds of DHT sensors
+#define ANALOGPIN A0
 
-int humidiferController = D7;
-int greenLed = D6;
-int redLed = D5;
+int humidiferController = D5;
+int greenLed = D7;
+int redLed = D6;
 int timeSinceLastRead = 0;
 
 int sensorValue;
 int digitalValue;
+float ppm, rzero;
 
 DHT dht(DHTPIN, DHTTYPE);
+MQ135 gasSensor = MQ135(ANALOGPIN);
+
 
 // WiFi credentials.
 #include "../../Fungi-Environment-Controller/WiFiCredentials.h"
 WiFiClientSecure wifiClient;
 
 void airSensor(){
-  sensorValue = analogRead(0);       // read analog input pin 0
-  digitalValue = digitalRead(0);
-  Serial.print("Air Quality: ");
-  Serial.print(sensorValue, DEC);  // prints the value read
-  //Serial.println(digitalValue, DEC); // not using
+//  sensorValue = analogRead(A0);       // read analog input pin 0
+//  //digitalValue = digitalRead(A0);
+//  Serial.print("Air Quality: ");
+//  Serial.print(sensorValue, DEC);  // prints the value read
+//  Serial.print(" /t ");
+//  //Serial.println(digitalValue, DEC); // not using
+
+rzero = gasSensor.getRZero(); //this to get the rzero value, uncomment this to get ppm value
+  Serial.print("RZero=");
+  Serial.println(rzero); // this to display the rzero value continuously, uncomment this to get ppm value
+   
+//  ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
+//  Serial.print("PPM=");
+//  Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
+  
 
 }
 void humidityChecker() {
     float _humidity = dht.readHumidity();
     // Humidity checker
     if (_humidity < 80) {
+      digitalWrite(humidiferController, LOW);
       Serial.print(" Humidity is bad - ");
       Serial.print(_humidity);
-      Serial.print(" %\t");
-      digitalWrite(humidiferController, LOW);
+      Serial.print(" % \t ");
+      delay(60000);
     }
     else {
-      Serial.println("Humidity is good - ");
+      digitalWrite(humidiferController, HIGH);
+      Serial.print("Humidity is good - ");
       Serial.print(_humidity);
-      Serial.print(" %\t");
-      digitalWrite(humidiferController, HIGH);          // Turns Red light OFF
+      Serial.print(" % \t ");
     }
 }
 void sensorsChecker(){
   humidityChecker();
+  airSensor();
 }
 
 void connect() {
@@ -104,6 +121,7 @@ void connect() {
 void setup() {
   pinMode(greenLed, OUTPUT);     // Trun on humidifier on green light
   pinMode(redLed, OUTPUT);     // Turn off humidifier on red light
+  pinMode(humidiferController, OUTPUT);
 
   Serial.begin(9600);
   Serial.setTimeout(2000);
@@ -136,11 +154,11 @@ void loop() {
     digitalWrite(redLed, LOW);
   }
 
-//  if (!device.connected()) {
-//    Serial.println("Disconnected from MQTT");
-//    Serial.println(device.mqttClient.state());
-//    toReconnect = true;
-//  }
+  //  if (!device.connected()) {
+  //    Serial.println("Disconnected from MQTT");
+  //    Serial.println(device.mqttClient.state());
+  //    toReconnect = true;
+  //  }
 
   if (toReconnect) {
     connect();
@@ -174,13 +192,13 @@ void loop() {
     //Serial.print(t);
     //Serial.print(" *C ");
     Serial.print(f);
-    Serial.print(" *F%\t");
+    Serial.print(" *F \t ");
     Serial.print("Heat index: ");
     //Serial.print(hic);
     //Serial.print(" *C ");
     Serial.print(hif);
-    Serial.println(" *F");
-//    report(h, t, f, hic, hif);
+    Serial.println(" *F ");
+    //    report(h, t, f, hic, hif);
     timeSinceLastRead = 0;
   }
   delay(100);
