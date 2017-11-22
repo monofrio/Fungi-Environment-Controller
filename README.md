@@ -32,13 +32,14 @@ Humidity: 36.20 %	Temperature: 24.00 *C 75.20 *F	Heat index: 23.40 *C 74.12 *F
 Power: DC 5V - micro USB port
 Headers: 15-pin header with access to GPIOs, SPI, UART, ADC, and power pins.
 
-* MQ-135 
+* MQ-135
   * pinOut A0
   * read once every 2 seconds
   * 5v power
 
 * DHT-22
   * pinOut D1
+  * Set 4.7K - 10K resistor, which you will want to use as a pullup from the data pin to VCC
   * read once every 2 seconds
   * 2.5mA max current
   * 3.3v power

@@ -22,29 +22,55 @@ float ppm, rzero;
 DHT dht(DHTPIN, DHTTYPE);
 MQ135 gasSensor = MQ135(ANALOGPIN);
 
-
 // WiFi credentials.
 #include "../../Fungi-Environment-Controller/WiFiCredentials.h"
 WiFiClientSecure wifiClient;
 
 void airSensor(){
-//  sensorValue = analogRead(A0);       // read analog input pin 0
-//  //digitalValue = digitalRead(A0);
-//  Serial.print("Air Quality: ");
-//  Serial.print(sensorValue, DEC);  // prints the value read
-//  Serial.print(" /t ");
-//  //Serial.println(digitalValue, DEC); // not using
+  //  sensorValue = analogRead(A0);       // read analog input pin 0
+  //  //digitalValue = digitalRead(A0);
+  //  Serial.print("Air Quality: ");
+  //  Serial.print(sensorValue, DEC);  // prints the value read
+  //  Serial.print(" /t ");
+  //  //Serial.println(digitalValue, DEC); // not using
 
-rzero = gasSensor.getRZero(); //this to get the rzero value, uncomment this to get ppm value
-  Serial.print("RZero=");
-  Serial.println(rzero); // this to display the rzero value continuously, uncomment this to get ppm value
-   
-//  ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
-//  Serial.print("PPM=");
-//  Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
-  
+  rzero = gasSensor.getRZero(); //this to get the rzero value, uncomment this to get ppm value
+    Serial.print("RZero=");
+    Serial.println(rzero); // this to display the rzero value continuously, uncomment this to get ppm value
+
+  //  ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
+  //  Serial.print("PPM=");
+  //  Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
+
 
 }
+void database(){
+
+  String url = "https://www.markonofrio.com/fungi_controller/index.php?s1=";
+    url += switch1;
+    url += "&s2=";
+    url += switch2;
+    url += "&pass=";
+    url += passcode;
+
+    // This will send the request to the server
+    Serial.print("Requesting URL: ");
+    Serial.println(url);
+    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+                 "Host: " + host + "\r\n" +
+                 "Connection: close\r\n\r\n");
+    unsigned long timeout = millis();
+    while (client.available() == 0) {
+      if (millis() - timeout > 5000) {
+        Serial.println(">>> Client Timeout !");
+        client.stop();
+        return;
+      }
+    }
+
+
+}
+
 void humidityChecker() {
     float _humidity = dht.readHumidity();
     // Humidity checker
@@ -136,6 +162,7 @@ void setup() {
 
   humidityChecker();
   connect();
+  database();2
 }
 
 void loop() {
