@@ -3,7 +3,7 @@
 This project is to auto control air quality, humidity and temperature within a 10 gallon glass tank.  Using a custom fitted plexiglass top to maintain internal environment.
 
 I started this project with Arduino Uno and wanted to connect the Arduino Uno to Wifi.
-Now working with HiLetgo ESP8266 as a cheap alternative to connect to WiFi
+Now working with HiLetgo ESP8266 NodeMCU as a cheap alternative to connect to WiFi
 
 ## Hardware:
 * DHT-22 Sensor - code from: http://www.ardumotive.com/how-to-use-dht-22-sensor-en.html
@@ -28,10 +28,28 @@ Air Quality: 19 %, Humidity: 28.70 %, Temp: 77.72 Fahrenheit, 11pm 10-4-17
 Humidity: 36.20 %	Temperature: 24.00 *C 75.20 *F	Heat index: 23.40 *C 74.12 *F
 ```
 
+## HiLetgo NodeMCU ESP8266
+Power: DC 5V - micro USB port
+Headers: 15-pin header with access to GPIOs, SPI, UART, ADC, and power pins.
+
+* MQ-135 
+  * pinOut A0
+  * read once every 2 seconds
+  * 5v power
+
+* DHT-22
+  * pinOut D1
+  * read once every 2 seconds
+  * 2.5mA max current
+  * 3.3v power
+
 ## Task List.
 - [X] Set up ESP8266 with DHT-22 sensor
 - [X] Set up ESP8266 With MQ-135 sensor
+- [ ] calibrate MQ-135
+
 - [ ] Set up ESP8266 to database
+- [X] Connect to Wifi
 - [X] Set up humidifier
 - [ ] Set up heater for Tank
 ## TODO
