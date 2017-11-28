@@ -1,9 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid      = "";       // SSID
-const char* password  = "";   // Password
-const char* host      = "http://www.markonofrio.com";              // website
+ const char* ssid      = "BirchBrookBrewHouse3";       // SSID
+ const char* password  = "9147724158";   // Password
+ const char* host      = "http://www.markonofrio.com";              // website
 int sensorPin = A0; //the analog pin
 
 WiFiServer server(80);
@@ -75,9 +75,11 @@ void loop(){
   // This will send the request to the server
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
-               "Content-Type: application/x-www-form-urlencoded" +
+               //"Content-Type: application/x-www-form-urlencoded" +
                "Connection: close\r\n\r\n");
- Serial.println("request sent");
+ Serial.println("request sent ");
+ Serial.println(temperature);
+ 
   // unless you want to hammer your website, you need to put in a delay
   delay(TEST_DELAY);
 
