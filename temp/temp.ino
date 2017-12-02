@@ -1,10 +1,12 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h>
 
- const char* ssid      = "BirchBrookBrewHouse3";       // SSID
- const char* password  = "9147724158";   // Password
- const char* host      = "http://www.markonofrio.com";              // website
+ const char* ssid      = "Kram2";       // SSID
+ const char* password  = "@dzam626!";   // Password
+ const char* host      = "esp8266.markonofrio.com";              // website
 int sensorPin = A0; //the analog pin
+const int httpsPort = 443;
 
 WiFiServer server(80);
 #define TEST_DELAY   5000
@@ -55,31 +57,47 @@ void loop(){
   // not really necessary, just feels right to me to have a nice clean temperature variable :)
   temperature = temperatureF;
 
-  /// Use WiFiClient class to create TCP connections
-  WiFiClient client;
 
-  // port = 80 for web stuffs
-  const int httpPort = 80;
 
-  // try out that connection plz
-  if (!client.connect(host, httpPort)) {
+ // Use WiFiClientSecure class to create TLS connection
+  WiFiClientSecure client;
+  Serial.print("connecting to ");
+  Serial.println(host);
+  if (!client.connect(host, httpsPort)) {
+    Serial.println("connection failed");
     return;
   }
 
+
   String url = "/fungi_controller/write.php?fahrenheit=";
   url += String(temperature);
+  Serial.print("requesting URL: ");
+  Serial.println(url);
 
-//  Serial.print("requesting URL: ");
-//  Serial.println(url);
-
-  // This will send the request to the server
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
-               //"Content-Type: application/x-www-form-urlencoded" +
                "Connection: close\r\n\r\n");
- Serial.println("request sent ");
- Serial.println(temperature);
- 
+
+  Serial.println("request sent");
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    if (line == "\r") {
+      Serial.println("headers received");
+      break;
+    }
+  }
+  String line = client.readStringUntil('\n');
+  if (line.startsWith("{\"state\":\"success\"")) {
+    Serial.println("esp8266/Arduino CI successfull!");
+  } else {
+    Serial.println("esp8266/Arduino CI has failed");
+  }
+  Serial.println("reply was:");
+  Serial.println("==========");
+  Serial.println(line);
+  Serial.println("==========");
+  Serial.println("closing connection");
+  
   // unless you want to hammer your website, you need to put in a delay
   delay(TEST_DELAY);
 

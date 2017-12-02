@@ -14,8 +14,7 @@ $date= date('m-d-Y H:i:s') ;
   			}
 
   			// Insert values into table. Replace YOUR_TABLE_NAME with your database table name.
-  			$sql = "INSERT INTO temp (fahrenheit, tempdate )
-  			VALUES ('$temp','$date')";
+  			$sql = "INSERT INTO temp (fahrenheit, tempdate ) VALUES ('$temp','CURDATE()')";
   			if (mysqli_query($conn, $sql)) {
   				echo "OK";
   			} else {
@@ -24,8 +23,8 @@ $date= date('m-d-Y H:i:s') ;
 
   			// Close connection.
   			mysqli_close($conn);
-  		}
-  	//}
+  		//}
+  	}
   ?>
 
   <html>

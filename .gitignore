@@ -1,4 +1,5 @@
 WiFiCredentials.h
 .DS_Store
 .idea
+temp/
 fungi_controller/config.php
