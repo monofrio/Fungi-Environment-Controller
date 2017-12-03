@@ -1,0 +1,57 @@
+html, body{
+  background-color: #F2F2F2;
+  font-family: Arial;
+  font-size: 1em;
+}
+table{
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+th{
+  padding: 8px;
+  background-color: #FF837A;
+  border: 1px solid #FF837A;
+}
+td{
+  padding: 10px;
+  background-color: #FFF;
+  border: 1px solid #CCC;
+}
+
+div.notes{
+  font-family: arial;
+  text-align: center;
+}
+
+div.current{
+  font-size: 58px;
+  font-family: arial black;
+  text-align: center;
+}
+
+.axis {
+font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+stroke: #000;
+shape-rendering: crispEdges;
+}
+
+.axis--y path {
+display: none;
+}
+
+.line path {
+fill: none;
+stroke-width: 1.5px;
+stroke-linejoin: round;
+}
+
+.line text {
+font: bold 12px sans-serif;
+text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+}
