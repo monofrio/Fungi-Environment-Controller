@@ -9,7 +9,7 @@ int sensorPin = A0; //the analog pin
 const int httpsPort = 443;
 
 WiFiServer server(80);
-#define TEST_DELAY   10000
+#define TEST_DELAY   10 000
 
 // this will store the temperature
 float temperature;
