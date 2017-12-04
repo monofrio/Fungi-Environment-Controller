@@ -11,7 +11,7 @@
 //**    SAMPLE DATA: {"date": "2017-12-03 01:26:31", "fahrenheit": "71"}
 //**    DATE FORMAT: 24-Apr-07
           $time = strtotime($row['date']);
-          $myFormatForView = date('d-M-y G', $time);
+          $myFormatForView = date('d-M-y H:i:s', $time);
 
           $return[] = [
                 'date' => $myFormatForView,
