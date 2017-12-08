@@ -1,7 +1,9 @@
 <?php
     include 'config.php';
       $db_tableName = 'temp'; //UPDATE TABLE NAME
-      $sql = 'SELECT * FROM temp';
+//      $sql = 'SELECT * FROM temp';
+      $sql = 'SELECT * FROM temp ORDER BY date DESC';
+
 
       $result = $dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 

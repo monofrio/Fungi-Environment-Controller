@@ -27,7 +27,6 @@
 // Formated Data:  { "date": "03-Dec-17", "fahrenheit": "71"}
 d3.select("body").append("h1").text("Temp Chart");
 d3.select("body").append("div").attr("id", "stats");
-
 d3.select("body").append('svg').attr("width", "500").attr("height", "300");
 
 var svg = d3.select("svg"),
@@ -51,31 +50,36 @@ var y = d3.scaleLinear()
           console.log("Number of records: ",rows);
 
         var sumOfTemp = [];
-        var numberOfRecords = 30;
+        var numberOfRecords = 360;
+
 
         for(var i = 0; i < numberOfRecords; i++){
           sumOfTemp.push(d[i].fahrenheit);
         }
-          var tempSum = d3.sum(sumOfTemp),
-              averageTemp = (tempSum/ 30).toFixed(2),
-              maxTemp = d3.max(sumOfTemp),
-              minTemp = d3.min(sumOfTemp);
-          // Fahrenheit Data Log
-          console.log("Sum of last 30 Temps: ", tempSum);
-          console.log("Average Temp: ", averageTemp);
-          console.log("Max Temp: ", maxTemp);
-          console.log("Min Temp: ", minTemp);
+        var tempSum = d3.sum(sumOfTemp),
+            averageTemp = (tempSum / numberOfRecords).toFixed(2),
+            maxTemp = d3.max(sumOfTemp),
+            minTemp = d3.min(sumOfTemp);
+        // Fahrenheit Data Log
+        console.log("Sum of last 30 Temps: ", tempSum);
+        console.log("Average Temp: ", averageTemp);
+        console.log("Max Temp: ", maxTemp);
+        console.log("Min Temp: ", minTemp);
 
-          var stats = d3.select("div");
-
+        var stats = d3.select("div");
           stats.append("table");
-          stats.append("th").text("Fahrenheit Data Log");
+          stats.append("th").text("Fahrenheit Data Log for the last " + (numberOfRecords * 10 / 60 ) + " minutes");
+
+          stats.append("tr").text(d[0].date);
+
             stats.append("tr");
               stats.append("td").text("Max Temp: ");
               stats.append("td").text(maxTemp);
+
             stats.append("tr");
               stats.append("td").text("Min Temp: ");
               stats.append("td").text(minTemp);
+
             stats.append("tr");
               stats.append("td").text("Avarage Temp: ");
               stats.append("td").text(averageTemp);
