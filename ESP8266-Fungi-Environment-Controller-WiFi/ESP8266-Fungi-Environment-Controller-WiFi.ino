@@ -1,10 +1,7 @@
 // Librarys
 #include <Adafruit_Sensor.h>
 #include "DHT.h"
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
 #include "MQ135.h"
-// #include <Losant.h>
 
 #define DHTPIN 4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // There are multiple kinds of DHT sensors
@@ -22,67 +19,40 @@ float ppm, rzero;
 DHT dht(DHTPIN, DHTTYPE);
 MQ135 gasSensor = MQ135(ANALOGPIN);
 
-// WiFi credentials.
-#include "../../Fungi-Environment-Controller/WiFiCredentials.h"
-WiFiClientSecure wifiClient;
-
 void airSensor(){
-  //  sensorValue = analogRead(A0);       // read analog input pin 0
-  //  //digitalValue = digitalRead(A0);
-  //  Serial.print("Air Quality: ");
-  //  Serial.print(sensorValue, DEC);  // prints the value read
-  //  Serial.print(" /t ");
-  //  //Serial.println(digitalValue, DEC); // not using
+   sensorValue = analogRead(A0);       // read analog input pin 0
+   //digitalValue = digitalRead(A0);
+   Serial.print("Air Quality: ");
+   Serial.print(sensorValue, DEC);  // prints the value read
+   Serial.print(" /t ");
+   //Serial.println(digitalValue, DEC); // not using
 
   rzero = gasSensor.getRZero(); //this to get the rzero value, uncomment this to get ppm value
     Serial.print("RZero=");
     Serial.println(rzero); // this to display the rzero value continuously, uncomment this to get ppm value
 
-  //  ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
-  //  Serial.print("PPM=");
-  //  Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
-
-
-}
-void database(){
-
-  String url = "https://www.markonofrio.com/fungi_controller/index.php?s1=";
-    url += switch1;
-    url += "&s2=";
-    url += switch2;
-    url += "&pass=";
-    url += passcode;
-
-    // This will send the request to the server
-    Serial.print("Requesting URL: ");
-    Serial.println(url);
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-    unsigned long timeout = millis();
-    while (client.available() == 0) {
-      if (millis() - timeout > 5000) {
-        Serial.println(">>> Client Timeout !");
-        client.stop();
-        return;
-      }
-    }
-
-
+   ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
+   Serial.print("PPM=");
+   Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
 }
 
 void humidityChecker() {
     float _humidity = dht.readHumidity();
     // Humidity checker
     if (_humidity < 80) {
-      digitalWrite(humidiferController, LOW);
+      digitalWrite(humidiferController, HIGH);
+      digitalWrite(redLed, HIGH);
+            digitalWrite(greenLed, LOW);
       Serial.print(" Humidity is bad - ");
       Serial.print(_humidity);
       Serial.print(" % \t ");
+
       delay(60000);
     }
     else {
-      digitalWrite(humidiferController, HIGH);
+      digitalWrite(humidiferController, LOW);
+        digitalWrite(redLed, LOW);
+      digitalWrite(greenLed, HIGH);
       Serial.print("Humidity is good - ");
       Serial.print(_humidity);
       Serial.print(" % \t ");
@@ -91,57 +61,6 @@ void humidityChecker() {
 void sensorsChecker(){
   humidityChecker();
   airSensor();
-}
-
-void connect() {
-
-  // Connect to Wifi.
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(WIFI_SSID);
-
-  WiFi.persistent(false);
-  WiFi.mode(WIFI_OFF);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-
-  unsigned long wifiConnectStart = millis();
-
-  while (WiFi.status() != WL_CONNECTED) {
-    sensorsChecker();
-    // Check to see if
-    if (WiFi.status() == WL_CONNECT_FAILED) {
-      Serial.println("Failed to connect to WIFI. Please verify credentials: ");
-      Serial.println();
-      Serial.print("SSID: ");
-      Serial.println(WIFI_SSID);
-      Serial.print("Password: ");
-      Serial.println(WIFI_PASS);
-      Serial.println();
-    }
-
-    delay(500);
-    Serial.println("...");
-    // Only try for 5 seconds.
-    if(millis() - wifiConnectStart > 5000) {
-      Serial.println("Failed to connect to WiFi");
-      Serial.println("Please attempt to send updated configuration parameters.");
-      return;
-    }
-  }
-
-  Serial.println();
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-  Serial.println();
-
-  // http request
-
-  Serial.println("Connected!");
-  Serial.println();
-  Serial.println("This device is now ready for use!");
 }
 
 void setup() {
@@ -160,37 +79,10 @@ void setup() {
   Serial.println("Running DHT!");
   Serial.println("-------------------------------------");
 
-  humidityChecker();
-  connect();
-  database();2
+  sensorsChecker();
 }
 
 void loop() {
-
-   bool toReconnect = false;
-
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Disconnected from WiFi");
-    digitalWrite(greenLed, LOW);
-    digitalWrite(redLed, HIGH);
-    toReconnect = true;
-  }
-  else{
-    // Set LED lights to indicate when wifi is connected
-    digitalWrite(greenLed, HIGH);
-    digitalWrite(redLed, LOW);
-  }
-
-  //  if (!device.connected()) {
-  //    Serial.println("Disconnected from MQTT");
-  //    Serial.println(device.mqttClient.state());
-  //    toReconnect = true;
-  //  }
-
-  if (toReconnect) {
-    connect();
-  }
-
   // Report every 2 seconds.
   if(timeSinceLastRead > 2000) {
     sensorsChecker();
