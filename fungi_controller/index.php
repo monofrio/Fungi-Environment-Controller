@@ -8,7 +8,7 @@
     <title>Temp Statuses</title>
 
     <link href='style.css' rel="stylesheet" type="text/css" />
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="d3.v4.min.js"></script>
 
   </head>
   <body>
@@ -16,7 +16,7 @@
       // Sample Data: {"date":"2017-12-03 01:26:31","fahrenheit":"71"}
       // Formated Data:  { "date": "03-Dec-17", "fahrenheit": "71"}
       d3.select("body").append("h1").text("Temp Chart");
-      d3.select("body").append("div").attr("id", "stats");
+      d3.select("body").append("div").attr("class", "stats");
       d3.select("body").append('svg').attr("width", "500").attr("height", "300");
 
       var svg = d3.select("svg"),
@@ -31,7 +31,6 @@
       var y = d3.scaleLinear()
           .rangeRound([height, 0]);
 
-
       d3.json('http://esp8266.markonofrio.com/fungi_controller/data.php',
           function(error, d) {
               if (error) return console.warn(error);
@@ -41,7 +40,6 @@
 
               var sumOfTemp = [];
               var numberOfRecords = 360;
-
 
               for(var i = 0; i < numberOfRecords; i++){
                   sumOfTemp.push(d[i].fahrenheit);
@@ -56,55 +54,52 @@
               console.log("Max Temp: ", maxTemp);
               console.log("Min Temp: ", minTemp);
 
-              var stats = d3.select("div");
-              stats.append("table");
-              stats.append("th").text("Fahrenheit Data Log for the last " + (numberOfRecords * 10 / 60 ) + " minutes");
-
-              stats.append("tr").text(d[0].date);
-
-              stats.append("tr");
-              stats.append("td").text("Max Temp: ");
-              stats.append("td").text(maxTemp);
-
-              stats.append("tr");
-              stats.append("td").text("Min Temp: ");
-              stats.append("td").text(minTemp);
-
-              stats.append("tr");
-              stats.append("td").text("Avarage Temp: ");
-              stats.append("td").text(averageTemp);
-
-
-
+              var stats = d3.selectAll(".stats").append("th").text("Fahrenheit Data Log for the last " + (numberOfRecords * 10 / 60 ) + " minutes");
+                  // .append("tr")
+                  //   .append("td")
+                  //   .text("Time :");
+                  //   // .text(d[0].date);
+              //
+              // stats.append("tr");
+              // stats.append("td").text("Max Temp: ");
+              // stats.append("td").text(maxTemp);
+              //
+              // stats.append("tr");
+              // stats.append("td").text("Min Temp: ");
+              // stats.append("td").text(minTemp);
+              //
+              // stats.append("tr");
+              // stats.append("td").text("Avarage Temp: ");
+              // stats.append("td").text(averageTemp);
 
           });
   </script>
   <div style="display:block; float:left;"></div>
 <?php
-    include 'config.php';
-      // Number of entires to display.
-      $display = 5;
-      $db_tableName = 'temp';
-
-      $result = mysqli_query($conn, "SELECT * FROM ".$db_tableName." ORDER BY date DESC LIMIT " . $display);
-      $row_cnt = mysqli_num_rows(mysqli_query($conn, "SELECT 'fahrenheit' FROM ".$db_tableName.""));
-
-      while($row = mysqli_fetch_assoc($result)) {
-        echo "<table><tr><th>Date</th><th>Fahrenheit</th></tr>";
-        echo "<tr><td>";
-        echo $row["date"];
-        echo "</td><td>";
-        echo $row["fahrenheit"];
-        echo " </td></tr>";
-        $counter++;
-      }
-      echo "</table>";
-
-      // Print number of entries in the database. Replace YOUR_TABLE_NAME with your database table name.
-      echo "<div class='notes'>Displaying last " . $display . " entries.<br/>The database table has " . $row_cnt . " total entries.</div>";
-
-      // Close connection.
-      mysqli_close($conn);
-    ?>
+//    include 'config.php';
+//      // Number of entires to display.
+//      $display = 5;
+//      $db_tableName = 'temp';
+//
+//      $result = mysqli_query($conn, "SELECT * FROM ".$db_tableName." ORDER BY date DESC LIMIT " . $display);
+//      $row_cnt = mysqli_num_rows(mysqli_query($conn, "SELECT 'fahrenheit' FROM ".$db_tableName.""));
+//
+//      while($row = mysqli_fetch_assoc($result)) {
+//        echo "<table><tr><th>Date</th><th>Fahrenheit</th></tr>";
+//        echo "<tr><td>";
+//        echo $row["date"];
+//        echo "</td><td>";
+//        echo $row["fahrenheit"];
+//        echo " </td></tr>";
+//        $counter++;
+//      }
+//      echo "</table>";
+//
+//      // Print number of entries in the database. Replace YOUR_TABLE_NAME with your database table name.
+//      echo "<div class='notes'>Displaying last " . $display . " entries.<br/>The database table has " . $row_cnt . " total entries.</div>";
+//
+//      // Close connection.
+//      mysqli_close($conn);
+//    ?>
 
 </html>
