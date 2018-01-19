@@ -3,13 +3,17 @@
 #include "DHT.h"
 #include "MQ135.h"
 
-#define DHTPIN 4     // what digital pin the DHT22 is conected to
+#define DHTPIN D4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // There are multiple kinds of DHT sensors
 #define ANALOGPIN A0
+#define RELAY1  D7
+#define RELAY2  D8
 
-int humidiferController = D5;
-int greenLed = D7;
-int redLed = D6;
+const int humidiferController = RELAY1;
+const int relay_2 = RELAY2;
+const int greenLed = D6;
+const int redLed = D5;
+
 int timeSinceLastRead = 0;
 
 int sensorValue;
@@ -21,28 +25,28 @@ MQ135 gasSensor = MQ135(ANALOGPIN);
 
 void airSensor(){
    sensorValue = analogRead(A0);       // read analog input pin 0
-   //digitalValue = digitalRead(A0);
+   digitalValue = digitalRead(A0);
    Serial.print("Air Quality: ");
    Serial.print(sensorValue, DEC);  // prints the value read
-   Serial.print(" /t ");
+   Serial.print(" \t ");
    //Serial.println(digitalValue, DEC); // not using
 
   rzero = gasSensor.getRZero(); //this to get the rzero value, uncomment this to get ppm value
     Serial.print("RZero=");
-    Serial.println(rzero); // this to display the rzero value continuously, uncomment this to get ppm value
-
-   ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
-   Serial.print("PPM=");
-   Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
+    Serial.print(rzero); // this to display the rzero value continuously, uncomment this to get ppm value
+    Serial.println();
+//   ppm = gasSensor.getPPM(); // this to get ppm value, uncomment this to get rzero value
+//   Serial.print("PPM=");
+//   Serial.println(ppm); // this to display the ppm value continuously, uncomment this to get rzero value
 }
 
 void humidityChecker() {
     float _humidity = dht.readHumidity();
     // Humidity checker
-    if (_humidity < 80) {
-      digitalWrite(humidiferController, HIGH);
+    if (_humidity < 95) {
+      digitalWrite(humidiferController, LOW);
       digitalWrite(redLed, HIGH);
-            digitalWrite(greenLed, LOW);
+      digitalWrite(greenLed, LOW);
       Serial.print(" Humidity is bad - ");
       Serial.print(_humidity);
       Serial.print(" % \t ");
@@ -50,8 +54,8 @@ void humidityChecker() {
       delay(60000);
     }
     else {
-      digitalWrite(humidiferController, LOW);
-        digitalWrite(redLed, LOW);
+      digitalWrite(humidiferController, HIGH);
+      digitalWrite(redLed, LOW);
       digitalWrite(greenLed, HIGH);
       Serial.print("Humidity is good - ");
       Serial.print(_humidity);
@@ -67,6 +71,11 @@ void setup() {
   pinMode(greenLed, OUTPUT);     // Trun on humidifier on green light
   pinMode(redLed, OUTPUT);     // Turn off humidifier on red light
   pinMode(humidiferController, OUTPUT);
+
+  digitalWrite(redLed, LOW);
+  digitalWrite(greenLed, LOW);
+  digitalWrite(humidiferController, HIGH);
+  digitalWrite(relay_2, LOW);
 
   Serial.begin(9600);
   Serial.setTimeout(2000);

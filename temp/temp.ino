@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
- const char* ssid      = "BirchBrookBrewHouse3";       // SSID
+ const char* ssid      = "BoardGameZone-5G-Guest";       // SSID
  const char* password  = "9147724158";   // Password
  const char* host      = "http://www.markonofrio.com";              // website
 int sensorPin = A0; //the analog pin
