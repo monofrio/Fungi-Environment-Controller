@@ -2,9 +2,15 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClientSecure.h>
 
+<<<<<<< HEAD
  const char* ssid      = "Kram2";       // SSID
  const char* password  = "@dzam626!";   // Password
  const char* host      = "esp8266.markonofrio.com";              // website
+=======
+ const char* ssid      = "BoardGameZone-5G-Guest";       // SSID
+ const char* password  = "9147724158";   // Password
+ const char* host      = "http://www.markonofrio.com";              // website
+>>>>>>> no-wifi
 int sensorPin = A0; //the analog pin
 const int httpsPort = 443;
 
